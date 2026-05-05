@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>深刻連結：80張關係增值卡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
+
+        :root {
+            --card-width: 320px;
+            --card-height: 480px;
+            --primary-love: #e5989b; /* 玫瑰粉 */
+            --secondary-love: #ffb4a2; /* 柔粉 */
+            --accent-love: #b5838d; /* 深玫瑰 */
+            --bg-love: #fcd5ce; /* 背景底粉 */
+        }
+
+        @media (max-width: 375px) {
+            :root {
+                --card-width: 280px;
+                --card-height: 420px;
+            }
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #f8edeb 0%, #fcd5ce 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .card-container {
+            perspective: 1200px;
+            width: var(--card-width);
+            height: var(--card-height);
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+            cursor: pointer;
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(181, 131, 141, 0.2);
+            padding: 2rem;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .card-front {
+            background: #ffffff;
+            border: 3px solid var(--primary-love);
+        }
+
+        .card-back {
+            background: #fffafa;
+            border: 3px solid var(--primary-love);
+            transform: rotateY(180deg);
+        }
+
+        .category-tag {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            padding: 5px 16px;
+            border-radius: 99px;
+            background: var(--primary-love);
+            color: white;
+            font-weight: bold;
+            letter-spacing: 0.05em;
+        }
+
+        .value-rule {
+            font-size: 0.7rem;
+            color: var(--accent-love);
+            margin-bottom: 1.5rem;
+            border-bottom: 1.5px solid #f8edeb;
+            padding-bottom: 0.7rem;
+            width: 90%;
+            font-weight: 500;
+        }
+
+        .card-number {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            font-size: 0.8rem;
+            color: var(--primary-love);
+            opacity: 0.6;
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
+        }
+
+        .heart-icon {
+            animation: heartBeat 1.5s infinite ease-in-out;
+            color: var(--primary-love);
+        }
+
+        .click-hint {
+            margin-top: 2.5rem;
+            font-size: 0.85rem;
+            color: var(--accent-love);
+            opacity: 0.7;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 5px;
+            background: var(--primary-love);
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress" class="progress-bar" style="width: 0%"></div>
+
+    <!-- Header -->
+    <div class="text-center mb-8 px-4 header-area">
+        <h1 class="text-2xl font-bold text-[#6d4c41] mb-1">深刻連結</h1>
+        <p class="text-[#b5838d] text-xs tracking-widest font-medium">點擊卡片，開啟心的對話</p>
+    </div>
+
+    <!-- Game Board -->
+    <div class="card-container">
+        <div id="main-card" class="card" onclick="handleCardClick()">
+            <!-- Front -->
+            <div class="card-face card-front">
+                <div class="heart-icon w-14 h-14 mb-4">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </div>
+                <h2 class="text-lg font-bold text-[#6d4c41]">準備好增值感情了嗎？</h2>
+                <p class="click-hint">點擊卡片 抽取新題</p>
+            </div>
+            <!-- Back -->
+            <div class="card-face card-back">
+                <div id="card-category" class="category-tag">分類</div>
+                
+                <div class="value-rule">
+                    💖 增值法則：聽完後請說「謝謝分享」
+                </div>
+
+                <p id="card-content" class="text-base md:text-lg text-[#5d4037] leading-relaxed font-bold px-2">
+                    內容載入中...
+                </p>
+                
+                <div id="card-id" class="card-number">#00</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-8 text-[11px] text-[#b5838d] font-bold tracking-tighter footer-area">
+        <span id="progress-text">0 / 80</span>
+    </div>
+
+    <script>
+        // --- 音效系統 ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'shuffle') { // 抽牌聲：清脆短促
+                oscillator.type = 'triangle';
+                oscillator.frequency.setValueAtTime(440, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'flip') { // 翻開聲：輕柔提醒
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                oscillator.frequency.exponentialRampToValueAtTime(1046.5, audioCtx.currentTime + 0.2);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            }
+        }
+
+        // --- 資料 ---
+        const cardsData = [
+            { id: 1, cat: "微光回憶", text: "第一次見面時，我身上的哪一個細節最吸引你？" },
+            { id: 2, cat: "微光回憶", text: "如果要把我們的故事拍成電影，你會選哪首歌當主題曲？" },
+            { id: 3, cat: "微光回憶", text: "你覺得我們兩個人最像的地方是什麼？" },
+            { id: 4, cat: "微光回憶", text: "哪一次的約會讓你印象最深刻，即便那天可能出了點小意外？" },
+            { id: 5, cat: "微光回憶", text: "在我看不到的時候，你曾為我做過什麼貼心的小事嗎？" },
+            { id: 6, cat: "微光回憶", text: "你最喜歡我稱讚你哪一點？（外表、能力、還是個性？）" },
+            { id: 7, cat: "微光回憶", text: "如果現在可以立刻傳送到世界上任何地方，你想帶我去哪？" },
+            { id: 8, cat: "微光回憶", text: "我曾說過的哪句話，讓你覺得非常有動力？" },
+            { id: 9, cat: "微光回憶", text: "哪一個瞬間讓你覺得「這輩子就是這個人了」？" },
+            { id: 10, cat: "微光回憶", text: "你覺得我穿哪一件衣服最迷人？" },
+            { id: 11, cat: "微光回憶", text: "描述一個你腦海中關於我們最溫馨的畫面。" },
+            { id: 12, cat: "微光回憶", text: "如果我們有共同的座右銘，你覺得會是什麼？" },
+            { id: 13, cat: "微光回憶", text: "你最喜歡我對你做的哪種肢體接觸（牽手、擁抱、摸頭）？" },
+            { id: 14, cat: "微光回憶", text: "分享一個關於我的優點，是連我自己都沒察覺到的。" },
+            { id: 15, cat: "微光回憶", text: "如果要送我一份不用花錢但很有意義的禮物，那會是什麼？" },
+            { id: 16, cat: "微光回憶", text: "跟我在一起後，你覺得自己最大的改變是什麼？" },
+            { id: 17, cat: "微光回憶", text: "你最懷念我們剛認識時的哪一種感覺？" },
+            { id: 18, cat: "微光回憶", text: "我們之間有什麼只有兩人才懂的內部笑話？" },
+            { id: 19, cat: "微光回憶", text: "什麼時候你會特別想跟我分享你的喜悅？" },
+            { id: 20, cat: "微光回憶", text: "你覺得我是哪一種動物？為什麼？" },
+            { id: 21, cat: "靈魂深掘", text: "你生命中最感到自卑的時刻是什麼？" },
+            { id: 22, cat: "靈魂深掘", text: "成長過程中，誰對你的價值觀影響最大？" },
+            { id: 23, cat: "靈魂深掘", text: "有什麼事是你一直想嘗試，卻因為害怕失敗而沒做的？" },
+            { id: 24, cat: "靈魂深掘", text: "你最希望我如何安慰情緒低落時的你？" },
+            { id: 25, cat: "靈魂深掘", text: "在這段關係中，你最害怕失去的是什麼？" },
+            { id: 26, cat: "靈魂深掘", text: "如果可以回到過去改變一件事，那會是什麼？" },
+            { id: 27, cat: "靈魂深掘", text: "你覺得自己最難被理解的部分是什麼？" },
+            { id: 28, cat: "靈魂深掘", text: "哪一種行為會讓你瞬間感到不安全感？" },
+            { id: 29, cat: "靈魂深掘", text: "你曾為了迎合我而隱藏過真實的想法嗎？" },
+            { id: 30, cat: "靈魂深掘", text: "你最理想的「Me Time」是如何度過的？" },
+            { id: 31, cat: "靈魂深掘", text: "如果你的生命只剩下一年，你最想完成的夢想是什麼？" },
+            { id: 32, cat: "靈魂深掘", text: "你的原生家庭在處理衝突時的方式，對你有什麼影響？" },
+            { id: 33, cat: "靈魂深掘", text: "你最不希望我看到你哪一種樣子？" },
+            { id: 34, cat: "靈魂深掘", text: "對你來說，什麼叫做「真正的成功」？" },
+            { id: 35, cat: "靈魂深掘", text: "哪一個童年回憶最能代表現在的你？" },
+            { id: 36, cat: "靈魂深掘", text: "你覺得自己最大的性格缺陷是什麼？你如何與它共處？" },
+            { id: 37, cat: "靈魂深掘", text: "有什麼事是你絕對無法妥協的底線？" },
+            { id: 38, cat: "靈魂深掘", text: "當你感到孤單時，通常會做什麼來排解？" },
+            { id: 39, cat: "靈魂深掘", text: "你最希望被社會大眾認可的部分是什麼？" },
+            { id: 40, cat: "靈魂深掘", text: "寫一張紙條給十年前的自己，你會寫什麼？" },
+            { id: 41, cat: "真實磨合", text: "我們上次吵架時，你內心真正的感受是什麼？" },
+            { id: 42, cat: "真實磨合", text: "你覺得我對你做過最讓你感到「不被尊重」的一件事是什麼？" },
+            { id: 43, cat: "真實磨合", text: "當我們意見分歧時，你最希望我如何表達不同意？" },
+            { id: 44, cat: "真實磨合", text: "有沒有哪一個我的習慣，其實你忍受很久了？" },
+            { id: 45, cat: "真實磨合", text: "你覺得我們在金錢觀上最大的差異在哪裡？" },
+            { id: 46, cat: "真實磨合", text: "你認為「道歉」最核心的意義是什麼？" },
+            { id: 47, cat: "真實磨合", text: "當我忙於工作而忽略你時，你內心的潛台詞是什麼？" },
+            { id: 48, cat: "真實磨合", text: "你覺得我們該如何平衡「雙方家長」與「兩人世界」的關係？" },
+            { id: 49, cat: "真實磨合", text: "有哪一次我讓你失望了，但你當時沒有說出口？" },
+            { id: 50, cat: "真實磨合", text: "你覺得我們在親密度上，還有什麼進步空間？" },
+            { id: 51, cat: "真實磨合", text: "當我情緒激動時，你通常會選擇對抗還是逃避？" },
+            { id: 52, cat: "真實磨合", text: "你覺得在關係中，什麼樣的行為算是不忠誠？" },
+            { id: 53, cat: "真實磨合", text: "如果未來遇到重大危機，你認為我們的強項是什麼？" },
+            { id: 54, cat: "真實磨合", text: "你希望我如何指出你的缺點，才不會讓你感到被攻擊？" },
+            { id: 55, cat: "真實磨合", text: "關於分擔家務或責任，你覺得目前的分配公平嗎？" },
+            { id: 56, cat: "真實磨合", text: "哪種道歉方式最能讓你真心原諒我？" },
+            { id: 57, cat: "真實磨合", text: "在這段感情中，你曾感到過「寂寞」嗎？" },
+            { id: 58, cat: "真實磨合", text: "你覺得我是一個好的傾聽者嗎？為什麼？" },
+            { id: 59, cat: "真實磨合", text: "有什麼事是你想跟我討論，卻一直找不到時機開口的？" },
+            { id: 60, cat: "真實磨合", text: "如果我們可以訂立一個「吵架公約」，你最想加入哪一條？" },
+            { id: 61, cat: "未來共生", text: "十年後，你想像中我們的一天是怎麼度過的？" },
+            { id: 62, cat: "未來共生", text: "你希望我們老了以後，別人怎麼評價我們這對伴侶？" },
+            { id: 63, cat: "未來共生", text: "為了讓關係保持新鮮，你願意每個月做的一件嘗試是什麼？" },
+            { id: 64, cat: "未來共生", text: "你覺得我們該如何支持彼此的事業發展？" },
+            { id: 65, cat: "未來共生", text: "如果我們以後有孩子，你最希望孩子遺傳到我的哪一個特質？" },
+            { id: 66, cat: "未來共生", text: "你對「理想退休生活」的定義是什麼？" },
+            { id: 67, cat: "未來共生", text: "為了守護這段感情，你覺得我們最需要堅持的習慣是什麼？" },
+            { id: 68, cat: "未來共生", text: "如果我先離開了世界，你希望我留下什麼給你？" },
+            { id: 69, cat: "未來共生", text: "你覺得我們兩人在一起最大的「附加價值」是什麼？" },
+            { id: 70, cat: "未來共生", text: "我們該如何保持對彼此的好奇心？" },
+            { id: 71, cat: "未來共生", text: "描述一個你最想跟我一起完成的人生清單項目。" },
+            { id: 72, cat: "未來共生", text: "你最希望我為你的夢想做出什麼樣的實質支持？" },
+            { id: 73, cat: "未來共生", text: "什麼樣的承諾對你來說是最有份量的？" },
+            { id: 74, cat: "未來共生", text: "你覺得愛情與麵包，在我們未來的比重該如何分配？" },
+            { id: 75, cat: "未來共生", text: "我們該如何慶祝屬於我們的每一個紀念日？" },
+            { id: 76, cat: "未來共生", text: "如果我們可以一起創業或做一個專案，你覺得會是什麼？" },
+            { id: 77, cat: "未來共生", text: "你最自豪我們共同克服過的哪一件事？" },
+            { id: 78, cat: "未來共生", text: "如果可以對未來的我們說一句話，你會說什麼？" },
+            { id: 79, cat: "未來共生", text: "此刻，你最想對我表達的感謝是什麼？" },
+            { id: 80, cat: "未來共生", text: "請給予對方一個深情的擁抱，並在耳邊說出他的三個無可取代的理由。" }
+        ];
+
+        let drawnIndices = [];
+        let isFlipped = false;
+        let isProcessing = false;
+
+        function handleCardClick() {
+            if (isProcessing) return;
+
+            if (!isFlipped) {
+                drawNewCard();
+            } else {
+                isProcessing = true;
+                isFlipped = false;
+                document.getElementById('main-card').classList.remove('is-flipped');
+                
+                setTimeout(() => {
+                    drawNewCard();
+                    isProcessing = false;
+                }, 700);
+            }
+        }
+
+        function drawNewCard() {
+            if (drawnIndices.length >= cardsData.length) {
+                if (confirm("所有的愛之卡片都已翻閱！要重新開始一段旅程嗎？")) {
+                    drawnIndices = [];
+                    updateProgress();
+                } else {
+                    return;
+                }
+            }
+
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * cardsData.length);
+            } while (drawnIndices.includes(randomIndex));
+
+            const selectedCard = cardsData[randomIndex];
+            drawnIndices.push(randomIndex);
+
+            // 音效觸發
+            playSound('shuffle');
+            setTimeout(() => playSound('flip'), 150);
+
+            // 更新內容
+            document.getElementById('card-category').innerText = selectedCard.cat;
+            document.getElementById('card-content').innerText = selectedCard.text;
+            document.getElementById('card-id').innerText = `#${String(selectedCard.id).padStart(2, '0')}`;
+            
+            updateProgress();
+
+            isFlipped = true;
+            document.getElementById('main-card').classList.add('is-flipped');
+        }
+
+        function updateProgress() {
+            const count = drawnIndices.length;
+            const total = cardsData.length;
+            const percentage = (count / total) * 100;
+            
+            document.getElementById('progress').style.width = percentage + "%";
+            document.getElementById('progress-text').innerText = `${count} / ${total}`;
+        }
+
+        // 行動裝置適配
+        window.addEventListener('resize', () => {
+            document.body.style.height = window.innerHeight + 'px';
+        });
+        document.body.style.height = window.innerHeight + 'px';
+    </script>
+</body>
+</html>
